@@ -50,3 +50,17 @@ label {
     
     text-transform: uppercase;
 }
+.container-eq{
+    display: flex;
+    flex-direction: column;
+}
+input{
+    height: 25px;
+    width: 50px;
+    background-color: black;
+    border: 1px solid #CEFF1A;
+    color: #BEDA72;
+}
+.error-input{
+    border: 1px solid red
+}

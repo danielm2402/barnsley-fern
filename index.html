@@ -14,14 +14,26 @@
     <div class="logo">
         <img src="./src/images/logo.jpg">
         <div class="ecu">
-            <label>Stem</label>
-            <img src="./src/images/ecu1.svg">
-            <label>Successively smaller leaflets</label>
-            <img src="./src/images/ecu2.svg">
-            <label>Largest left-hand leaflet</label>
-            <img src="./src/images/ecu3.svg">
-            <label>Largest right-hand leaflet</label>
-            <img src="./src/images/ecu4.svg">
+            <div class="container-eq">
+                <label>Stem (1%)</label>
+                <img src="./src/images/ecu1.svg">
+                <input placeholder="1" id="eq-p1" type="number">
+            </div>
+            <div class="container-eq"><label>Successively smaller leaflets (85%)</label>
+                <img src="./src/images/ecu2.svg">
+                <input placeholder="85" id="eq-p2" type="number">
+            </div>
+
+            <div class="container-eq"><label>Largest left-hand leaflet (7%)</label>
+                <img src="./src/images/ecu3.svg">
+                <input placeholder="7" id="eq-p3" type="number">
+            </div>
+
+            <div class="container-eq"><label>Largest right-hand leaflet (7%)</label>
+                <img src="./src/images/ecu4.svg">
+                <input placeholder="7" id="eq-p4" type="number">
+            </div>
+
         </div>
     </div>
     <canvas id="canvas"></canvas>

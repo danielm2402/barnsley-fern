@@ -4,6 +4,10 @@ let canvas;
 let ctx;
 let x = 0, y = 0;
 
+let p1, p2, p3, p4, _p1 = 1 / 100, _p2 = 85 / 100, _p3 = 7 / 100, _p4 = 7 / 100
+
+
+
 let panZoom = { x: 0, y: 0, scale: 1 }
 let mouse = { x: 0, y: 0, wheel: 0 }
 
@@ -13,6 +17,18 @@ window.onload = function () {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d")
     body = document.getElementById("body")
+
+    p1 = document.getElementById("eq-p1")
+    p2 = document.getElementById("eq-p2")
+    p3 = document.getElementById("eq-p3")
+    p4 = document.getElementById("eq-p4")
+
+    let arr = [p1, p2, p3, p4]
+    let functs = [handlep1, handlep2, handlep3, handlep4]
+    arr.forEach((element, i) => {
+        element.addEventListener("keyup", functs[i])
+    });
+
 
     canvas.addEventListener("wheel", handleWheel)
     canvas.addEventListener("mousemove", handleMouse)
@@ -33,6 +49,70 @@ window.onload = function () {
 
     }, 1000 / 100);
 };
+
+
+function handlep1(e) {
+    _p1 = e.target.value / 100
+    if (_p1 + _p2 + _p3 + _p4 > 1) {
+        p1.classList.add("error-input")
+        p2.classList.add("error-input")
+        p3.classList.add("error-input")
+        p4.classList.add("error-input")
+    } else {
+        p1.classList.remove("error-input")
+        p2.classList.remove("error-input")
+        p3.classList.remove("error-input")
+        p4.classList.remove("error-input")
+    }
+
+}
+function handlep2(e) {
+    _p2 = e.target.value / 100
+
+    if (_p1 + _p2 + _p3 + _p4 > 1) {
+        p1.classList.add("error-input")
+        p2.classList.add("error-input")
+        p3.classList.add("error-input")
+        p4.classList.add("error-input")
+    } else {
+        p1.classList.remove("error-input")
+        p2.classList.remove("error-input")
+        p3.classList.remove("error-input")
+        p4.classList.remove("error-input")
+    }
+}
+function handlep3(e) {
+    _p3 = e.target.value / 100
+
+    if (_p1 + _p2 + _p3 + _p4 > 1) {
+        p1.classList.add("error-input")
+        p2.classList.add("error-input")
+        p3.classList.add("error-input")
+        p4.classList.add("error-input")
+    } else {
+        p1.classList.remove("error-input")
+        p2.classList.remove("error-input")
+        p3.classList.remove("error-input")
+        p4.classList.remove("error-input")
+    }
+}
+function handlep4(e) {
+    _p4 = e.target.value / 100
+
+    if (_p1 + _p2 + _p3 + _p4 > 1) {
+        p1.classList.add("error-input")
+        p2.classList.add("error-input")
+        p3.classList.add("error-input")
+        p4.classList.add("error-input")
+    } else {
+        p1.classList.remove("error-input")
+        p2.classList.remove("error-input")
+        p3.classList.remove("error-input")
+        p4.classList.remove("error-input")
+    }
+
+    console.log('AAA', _p1, _p2, _p3, _p4)
+}
 
 function loop() {
     setTimeout(function () {
@@ -98,15 +178,15 @@ function update() {
     let newX, newY
     let r = Math.random();
     let indicator = ''
-    if (r < 0.01) {
+    if (r < _p1) {
         newX = 0;
         newY = 0.16 * y;
         indicator = 'stem'
-    } else if (r < 0.86) {
+    } else if (r < _p1 + _p2) {
         newX = 0.85 * x + 0.04 * y;
         newY = -0.04 * x + 0.85 * y + 1.6;
         indicator = 'smaller'
-    } else if (r < 0.93) {
+    } else if (r < _p1 + _p2 + _p3) {
         newX = 0.20 * x - 0.26 * y;
         newY = 0.23 * x + 0.22 * y + 1.6;
         indicator = 'left-hand'
@@ -155,3 +235,5 @@ function update() {
     y = newY
 
 }
+
+
