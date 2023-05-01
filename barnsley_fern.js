@@ -23,8 +23,9 @@ window.onload = function () {
     canvas.width = body.offsetHeight - 10
     canvas.height = body.offsetHeight - 10
 
-
     ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+
     setInterval(() => {
 
         for (let i = 0; i < 20; i++)
@@ -32,6 +33,16 @@ window.onload = function () {
 
     }, 1000 / 100);
 };
+
+function loop() {
+    setTimeout(function () {
+        for (let i = 0; i < 100; i++) {
+            const number = window.requestAnimationFrame(loop);
+            update(number);
+        }
+
+    }, 1000 / 100)
+}
 
 
 function handleMouseDown(e) {
