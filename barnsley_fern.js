@@ -7,7 +7,7 @@ let x = 0, y = 0;
 
 let p1, p2, p3, p4, _p1 = 1 / 100, _p2 = 85 / 100, _p3 = 7 / 100, _p4 = 7 / 100
 
-
+var _scrollTimeout = null;
 
 let panZoom = { x: 0, y: 0, scale: 1 }
 let mouse = { x: 0, y: 0, wheel: 0 }
@@ -19,6 +19,15 @@ let copyCanvas = document.createElement("canvas")
 let m, b, m1, b1, x_min, x_max, y_min, y_max, x_canvas_min, x_canvas_max, y_canvas_min, y_canvas_max
 
 let pixelescopy
+
+let _maxIterations = 100000
+
+let myTimeout
+
+function myGreeting() {
+    console.log('SENDDD!!')
+}
+
 
 window.onload = function () {
     canvas = document.getElementById("canvas");
@@ -52,11 +61,11 @@ window.onload = function () {
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
 
-    x_min = -0.11015383136537915 //-2.1820
-    x_max = 2.029262270006203 //2.6558;
+    x_min = -2.1820
+    x_max = 2.6558;
 
-    y_min = 2.3989264293345447//0
-    y_max = 6.820465973413151//9.9983
+    y_min = 0
+    y_max = 9.9983
 
     x_canvas_min = 0
     x_canvas_max = canvas.width
@@ -64,14 +73,7 @@ window.onload = function () {
     y_canvas_min = 0
     y_canvas_max = canvas.height
 
-
-
-
-
-
     update()
-
-
 
 };
 
@@ -170,6 +172,7 @@ function handleMouse(e) {
 }
 function handleWheel(e) {
     mouse = { ...mouse, wheel: mouse.wheel + -e.deltaY }
+
     executeZoom()
 }
 
@@ -201,13 +204,15 @@ function scaleAt(parX, parY, sc) {
 }
 
 function apply() {
+    clearTimeout(myTimeout);
+
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#000"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.setTransform(panZoom.scale, 0, 0, panZoom.scale, panZoom.x, panZoom.y)
-
+    ctx.drawImage(copyCanvas, 0, 0)
 
     x_canvas_min = (0 - panZoom.x) / panZoom.scale
     x_canvas_max = ((canvas.width) - panZoom.x) / panZoom.scale
@@ -215,24 +220,21 @@ function apply() {
     y_canvas_min = (0 - panZoom.y) / panZoom.scale
     y_canvas_max = ((canvas.height) - panZoom.y) / panZoom.scale
 
-    ctx.fillStyle = "#fff"
-    ctx.fillRect(x_canvas_min, y_canvas_min, 20 / panZoom.scale, 20 / panZoom.scale)
-    ctx.fillRect(x_canvas_max, y_canvas_min, 20 / panZoom.scale, 20 / panZoom.scale)
-    ctx.fillRect(x_canvas_min, y_canvas_max, 20 / panZoom.scale, 20 / panZoom.scale)
-    ctx.fillRect(x_canvas_max, y_canvas_max, 20 / panZoom.scale, 20 / panZoom.scale)
+    myTimeout = setTimeout(update, 3000);
 
-    //console.log(x_canvas_min, (0 - panZoom.x) / panZoom.scale)
 
-    update()
 
 }
 
 function update() {
-
-
-
+    
+    const maxIterations = Math.round(_maxIterations * panZoom.scale);
     ctx.fillStyle = "#fff"
-    for (let i = 0; i < 100; i++) {
+    ctx2.setTransform(1, 0, 0, 1, 0, 0);
+    ctx2.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < maxIterations; i++) {
         let newX, newY
         let r = Math.random();
         if (r < _p1) {
@@ -249,29 +251,28 @@ function update() {
             newY = 0.26 * x + 0.24 * y + 0.44;
         }
 
-
         let plotX = ((x - x_min) / (x_max - x_min)) * (canvas.width - 0) + 0;
         let plotY = ((y - y_min) / (y_max - y_min)) * (canvas.height - 0) + 0;
 
-
-        if (newX >= x_min && newX <= x_max && newY >= y_min && newY <= y_max) {
+        if (plotX >= x_canvas_min && plotX <= x_canvas_max && plotY >= y_canvas_min && plotY <= y_canvas_max) {
             paint(plotX, plotY);
-            x = newX;
-            y = newY;
-            console.log('ENTRA')
         }
 
-        
+        x = newX;
+        y = newY;
+
+
+
     }
 
-    /*  x_min = ((x_canvas_min - 0) / canvas.width) * (2.6558 - (-2.1820)) + (-2.1820)
-     x_max = ((x_canvas_max - 0) / canvas.width) * (2.6558 - (-2.1820)) + (-2.1820)
- 
-     y_min = ((y_canvas_min - 0) / canvas.height) * (9.9983 - (0)) + (0)
-     y_max = ((y_canvas_max - 0) / canvas.height) * (9.9983 - (0)) + (0) */
+    x_min = ((x_canvas_min - 0) / canvas.width) * (2.6558 - (-2.1820)) + (-2.1820)
+    x_max = ((x_canvas_max - 0) / canvas.width) * (2.6558 - (-2.1820)) + (-2.1820)
 
+    y_min = ((y_canvas_min - 0) / canvas.height) * (9.9983 - (0)) + (0)
+    y_max = ((y_canvas_max - 0) / canvas.height) * (9.9983 - (0)) + (0)
 
-    
+    ctx2.drawImage(canvas, 0, 0)
+
 
 
 
