@@ -2,6 +2,7 @@
 
 let canvas;
 let ctx;
+let ctx2;
 let x = 0, y = 0;
 
 let p1, p2, p3, p4, _p1 = 1 / 100, _p2 = 85 / 100, _p3 = 7 / 100, _p4 = 7 / 100
@@ -12,6 +13,11 @@ let panZoom = { x: 0, y: 0, scale: 1 }
 let mouse = { x: 0, y: 0, wheel: 0 }
 
 let points = []
+
+let copyCanvas = document.createElement("canvas")
+
+let pixeles
+let pixelescopy
 
 window.onload = function () {
     canvas = document.getElementById("canvas");
@@ -35,19 +41,21 @@ window.onload = function () {
     canvas.addEventListener("mousedown", handleMouseDown)
     canvas.addEventListener("mouseup", handleMouseUp)
 
-
     canvas.width = body.offsetHeight - 10
     canvas.height = body.offsetHeight - 10
 
+    copyCanvas.width = body.offsetHeight - 10
+    copyCanvas.height = body.offsetHeight - 10
+
+    ctx2 = copyCanvas.getContext("2d")
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
 
-    setInterval(() => {
 
-        for (let i = 0; i < 20; i++)
-            update();
+    update()
 
-    }, 1000 / 100);
+
+
 };
 
 
@@ -111,12 +119,11 @@ function handlep4(e) {
         p4.classList.remove("error-input")
     }
 
-    console.log('AAA', _p1, _p2, _p3, _p4)
 }
 
 function loop() {
     setTimeout(function () {
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 100000; i++) {
             const number = window.requestAnimationFrame(loop);
             update(number);
         }
@@ -172,67 +179,56 @@ function apply() {
     ctx.fillStyle = "#000"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.setTransform(panZoom.scale, 0, 0, panZoom.scale, panZoom.x, panZoom.y)
+    update()
 }
 
 function update() {
-    let newX, newY
-    let r = Math.random();
-    let indicator = ''
-    if (r < _p1) {
-        newX = 0;
-        newY = 0.16 * y;
-        indicator = 'stem'
-    } else if (r < _p1 + _p2) {
-        newX = 0.85 * x + 0.04 * y;
-        newY = -0.04 * x + 0.85 * y + 1.6;
-        indicator = 'smaller'
-    } else if (r < _p1 + _p2 + _p3) {
-        newX = 0.20 * x - 0.26 * y;
-        newY = 0.23 * x + 0.22 * y + 1.6;
-        indicator = 'left-hand'
-    } else {
-        newX = -0.15 * x + 0.28 * y;
-        newY = 0.26 * x + 0.24 * y + 0.44;
-        indicator = 'right-hand'
+    pixeles = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    for (let i = 0; i < 100000; i++) {
+        let newX, newY
+        let r = Math.random();
+        if (r < _p1) {
+            newX = 0;
+            newY = 0.16 * y;
+        } else if (r < _p1 + _p2) {
+            newX = 0.85 * x + 0.04 * y;
+            newY = -0.04 * x + 0.85 * y + 1.6;
+        } else if (r < _p1 + _p2 + _p3) {
+            newX = 0.20 * x - 0.26 * y;
+            newY = 0.23 * x + 0.22 * y + 1.6;
+        } else {
+            newX = -0.15 * x + 0.28 * y;
+            newY = 0.26 * x + 0.24 * y + 0.44;
+        }
+
+        let valorMinimoEscalado = (0 - panZoom.x) / panZoom.scale
+        let valorMaximoEscalado = (canvas.width - 100) - panZoom.x
+        let valorMaximoEscaladoY = (canvas.height - 100) - panZoom.x
+        let plotX = ((x - (-2.1820)) / (2.6558 - (-2.1820))) * ((valorMaximoEscalado) - valorMinimoEscalado) + valorMinimoEscalado
+
+        let plotY = (y * valorMaximoEscaladoY) / 9.9983
+
+        paint(plotX, plotY)
+
+        x = newX
+        y = newY
     }
 
+    ctx.putImageData(pixeles, 0, 0)
+
+    ctx2.drawImage(canvas, 0, 0)
+
+}
+
+function paint(x, y) {
 
 
-    let valorMinimoEscalado = (0 - panZoom.x) / panZoom.scale
-    let valorMaximoEscalado = (canvas.width - 100) - panZoom.x
+    let index = (Math.trunc(y) * pixeles.width + Math.trunc(x)) * 4
+    pixeles.data[index + 1] = 255
+    pixeles.data[index + 2] = 255
+    pixeles.data[index + 3] = 255
+    pixeles.data[index + 4] = 255
 
-    let valorMaximoEscaladoY = (canvas.height - 100) - panZoom.x
-
-    let plotX = ((x - (-2.1820)) / (2.6558 - (-2.1820))) * ((valorMaximoEscalado) - valorMinimoEscalado) + valorMinimoEscalado
-
-
-    let plotY = (y * valorMaximoEscaladoY) / 9.9983
-
-
-
-    ctx.beginPath()
-    switch (indicator) {
-        case 'stem':
-            ctx.fillStyle = '#043600'
-            break;
-        case 'smaller':
-            ctx.fillStyle = '#15ff00'
-            break;
-        case 'left-hand':
-            ctx.fillStyle = '#9efa25'
-            break;
-        case 'right-hand':
-            ctx.fillStyle = '#9efa25'
-            break;
-
-        default:
-            ctx.fillStyle = '#fff'
-            break;
-    }
-    ctx.fillRect(plotX, plotY, 1, 1)
-
-    x = newX
-    y = newY
 
 }
 
