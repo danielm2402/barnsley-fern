@@ -16,7 +16,8 @@ let points = []
 
 let copyCanvas = document.createElement("canvas")
 
-let pixeles
+let m, b, m1, b1, x_min, x_max, y_min, y_max, x_canvas_min, x_canvas_max, y_canvas_min, y_canvas_max
+
 let pixelescopy
 
 window.onload = function () {
@@ -49,6 +50,22 @@ window.onload = function () {
 
     ctx2 = copyCanvas.getContext("2d")
     ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+
+    x_min = -0.11015383136537915 //-2.1820
+    x_max = 2.029262270006203 //2.6558;
+
+    y_min = 2.3989264293345447//0
+    y_max = 6.820465973413151//9.9983
+
+    x_canvas_min = 0
+    x_canvas_max = canvas.width
+
+    y_canvas_min = 0
+    y_canvas_max = canvas.height
+
+
+
 
 
 
@@ -144,13 +161,23 @@ function handleMouse(e) {
     const bounds = canvas.getBoundingClientRect()
     mouse = { ...mouse, x: e.pageX - bounds.left - window.scrollX, y: e.pageY - bounds.top - window.scrollY, lastX: mouse.x, lastY: mouse.y, lastButton: mouse.button }
 
+    if (mouse.button2) {
+        panZoom.x += mouse.x - mouse.lastX;
+        panZoom.y += mouse.y - mouse.lastY;
+        apply()
+    }
+
 }
 function handleWheel(e) {
     mouse = { ...mouse, wheel: mouse.wheel + -e.deltaY }
+    executeZoom()
+}
+
+function executeZoom() {
     let scale = 1
     if (mouse.wheel !== 0) {
         scale = mouse.wheel < 0 ? 1 / 1.01 : 1.01
-        mouse = { ...mouse, wheel: mouse.wheel * 0.8 }
+        mouse = { ...mouse, wheel: mouse.wheel * 0.9 }
         if (Math.abs(mouse.wheel) < 1) {
             mouse = { ...mouse, wheel: 0 }
         }
@@ -174,17 +201,38 @@ function scaleAt(parX, parY, sc) {
 }
 
 function apply() {
+
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#000"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.setTransform(panZoom.scale, 0, 0, panZoom.scale, panZoom.x, panZoom.y)
+
+
+    x_canvas_min = (0 - panZoom.x) / panZoom.scale
+    x_canvas_max = ((canvas.width) - panZoom.x) / panZoom.scale
+
+    y_canvas_min = (0 - panZoom.y) / panZoom.scale
+    y_canvas_max = ((canvas.height) - panZoom.y) / panZoom.scale
+
+    ctx.fillStyle = "#fff"
+    ctx.fillRect(x_canvas_min, y_canvas_min, 20 / panZoom.scale, 20 / panZoom.scale)
+    ctx.fillRect(x_canvas_max, y_canvas_min, 20 / panZoom.scale, 20 / panZoom.scale)
+    ctx.fillRect(x_canvas_min, y_canvas_max, 20 / panZoom.scale, 20 / panZoom.scale)
+    ctx.fillRect(x_canvas_max, y_canvas_max, 20 / panZoom.scale, 20 / panZoom.scale)
+
+    //console.log(x_canvas_min, (0 - panZoom.x) / panZoom.scale)
+
     update()
+
 }
 
 function update() {
-    pixeles = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    for (let i = 0; i < 100000; i++) {
+
+
+
+    ctx.fillStyle = "#fff"
+    for (let i = 0; i < 100; i++) {
         let newX, newY
         let r = Math.random();
         if (r < _p1) {
@@ -201,35 +249,36 @@ function update() {
             newY = 0.26 * x + 0.24 * y + 0.44;
         }
 
-        let valorMinimoEscalado = (0 - panZoom.x) / panZoom.scale
-        let valorMaximoEscalado = (canvas.width - 100) - panZoom.x
-        let valorMaximoEscaladoY = (canvas.height - 100) - panZoom.x
-        let plotX = ((x - (-2.1820)) / (2.6558 - (-2.1820))) * ((valorMaximoEscalado) - valorMinimoEscalado) + valorMinimoEscalado
 
-        let plotY = (y * valorMaximoEscaladoY) / 9.9983
+        let plotX = ((x - x_min) / (x_max - x_min)) * (canvas.width - 0) + 0;
+        let plotY = ((y - y_min) / (y_max - y_min)) * (canvas.height - 0) + 0;
 
-        paint(plotX, plotY)
 
-        x = newX
-        y = newY
+        if (newX >= x_min && newX <= x_max && newY >= y_min && newY <= y_max) {
+            paint(plotX, plotY);
+            x = newX;
+            y = newY;
+            console.log('ENTRA')
+        }
+
+        
     }
 
-    ctx.putImageData(pixeles, 0, 0)
+    /*  x_min = ((x_canvas_min - 0) / canvas.width) * (2.6558 - (-2.1820)) + (-2.1820)
+     x_max = ((x_canvas_max - 0) / canvas.width) * (2.6558 - (-2.1820)) + (-2.1820)
+ 
+     y_min = ((y_canvas_min - 0) / canvas.height) * (9.9983 - (0)) + (0)
+     y_max = ((y_canvas_max - 0) / canvas.height) * (9.9983 - (0)) + (0) */
 
-    ctx2.drawImage(canvas, 0, 0)
+
+    
+
+
 
 }
 
 function paint(x, y) {
-
-
-    let index = (Math.trunc(y) * pixeles.width + Math.trunc(x)) * 4
-    pixeles.data[index + 1] = 255
-    pixeles.data[index + 2] = 255
-    pixeles.data[index + 3] = 255
-    pixeles.data[index + 4] = 255
-
-
+    ctx.fillRect(x, y, 1, 1)
 }
 
 
