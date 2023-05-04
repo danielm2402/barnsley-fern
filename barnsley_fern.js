@@ -235,7 +235,7 @@ function update() {
     const maxIterations = Math.round(_maxIterations * (panZoom.scale * 2))
     iterationsComponent.innerHTML = "ITERATIONS: "+ maxIterations
 
-    ctx.fillStyle = "#fff"
+    ctx.fillStyle = "#0D7700"
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < maxIterations; i++) {
