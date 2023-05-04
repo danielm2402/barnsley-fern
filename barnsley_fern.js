@@ -22,19 +22,23 @@ let pixelescopy
 
 let _maxIterations = 1000000
 
+let iterationsComponent
+
 let myTimeout
 
+let button
 
 window.onload = function () {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d")
     body = document.getElementById("body")
+    button = document.getElementById("redrawbutton")
 
     p1 = document.getElementById("eq-p1")
     p2 = document.getElementById("eq-p2")
     p3 = document.getElementById("eq-p3")
     p4 = document.getElementById("eq-p4")
-
+    iterationsComponent = document.getElementById("iterations")
     let arr = [p1, p2, p3, p4]
     let functs = [handlep1, handlep2, handlep3, handlep4]
     arr.forEach((element, i) => {
@@ -46,6 +50,7 @@ window.onload = function () {
     canvas.addEventListener("mousemove", handleMouse)
     canvas.addEventListener("mousedown", handleMouseDown)
     canvas.addEventListener("mouseup", handleMouseUp)
+
 
     canvas.width = body.offsetHeight - 10
     canvas.height = body.offsetHeight - 10
@@ -86,6 +91,7 @@ function handlep1(e) {
         p2.classList.remove("error-input")
         p3.classList.remove("error-input")
         p4.classList.remove("error-input")
+
     }
 
 }
@@ -112,6 +118,7 @@ function handlep3(e) {
         p2.classList.add("error-input")
         p3.classList.add("error-input")
         p4.classList.add("error-input")
+
     } else {
         p1.classList.remove("error-input")
         p2.classList.remove("error-input")
@@ -127,6 +134,7 @@ function handlep4(e) {
         p2.classList.add("error-input")
         p3.classList.add("error-input")
         p4.classList.add("error-input")
+
     } else {
         p1.classList.remove("error-input")
         p2.classList.remove("error-input")
@@ -210,7 +218,6 @@ function apply() {
 }
 
 function update() {
-    
     x_canvas_min = (0 - panZoom.x) / panZoom.scale
     x_canvas_max = ((canvas.width) - panZoom.x) / panZoom.scale
 
@@ -222,7 +229,11 @@ function update() {
 
     y_min = ((y_canvas_min - 0) / canvas.height) * (9.9983 - (0)) + (0)
     y_max = ((y_canvas_max - 0) / canvas.height) * (9.9983 - (0)) + (0)
-    const maxIterations = Math.round(_maxIterations * panZoom.scale);
+
+    
+
+    const maxIterations = Math.round(_maxIterations * (panZoom.scale * 2))
+    iterationsComponent.innerHTML = "ITERATIONS: "+ maxIterations
 
     ctx.fillStyle = "#fff"
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -258,16 +269,8 @@ function update() {
     ctx2.fillStyle = "#000"
     ctx2.fillRect(0, 0, canvas.width, canvas.height)
     ctx2.setTransform(panZoom.scale, 0, 0, panZoom.scale, panZoom.x, panZoom.y)
-    
+
     ctx2.drawImage(canvas, 0, 0)
-
-
-
-
-
-
-
-
 }
 
 function paint(x, y) {
