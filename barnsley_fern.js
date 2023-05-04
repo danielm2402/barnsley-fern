@@ -55,8 +55,8 @@ window.onload = function () {
     canvas.width = body.offsetHeight - 10
     canvas.height = body.offsetHeight - 10
 
-    copyCanvas.width = body.offsetHeight - 10
-    copyCanvas.height = body.offsetHeight - 10
+    copyCanvas.width = canvas.width
+    copyCanvas.height = canvas.height
 
     ctx2 = copyCanvas.getContext("2d")
     ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -175,6 +175,8 @@ function handleMouse(e) {
 
 }
 function handleWheel(e) {
+    
+    e.stopPropagation()
     mouse = { ...mouse, wheel: mouse.wheel + -e.deltaY }
 
     executeZoom()
@@ -214,7 +216,8 @@ function apply() {
     ctx.fillStyle = "#000"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.setTransform(panZoom.scale, 0, 0, panZoom.scale, panZoom.x, panZoom.y)
-    myTimeout = setTimeout(update, 250);
+    ctx.drawImage(copyCanvas, 0, 0)
+    myTimeout = setTimeout(update, 1000);
 }
 
 function update() {
@@ -268,7 +271,7 @@ function update() {
     ctx2.clearRect(0, 0, canvas.width, canvas.height);
     ctx2.fillStyle = "#000"
     ctx2.fillRect(0, 0, canvas.width, canvas.height)
-    ctx2.setTransform(panZoom.scale, 0, 0, panZoom.scale, panZoom.x, panZoom.y)
+   
 
     ctx2.drawImage(canvas, 0, 0)
 }
