@@ -230,10 +230,10 @@ function update() {
     y_min = ((y_canvas_min - 0) / canvas.height) * (9.9983 - (0)) + (0)
     y_max = ((y_canvas_max - 0) / canvas.height) * (9.9983 - (0)) + (0)
 
-    
+
 
     const maxIterations = Math.round(_maxIterations * (panZoom.scale * 2))
-    iterationsComponent.innerHTML = "ITERATIONS: "+ maxIterations
+    iterationsComponent.innerHTML = "ITERATIONS: " + maxIterations
 
     ctx.fillStyle = "#0D7700"
     ctx.clearRect(0, 0, canvas.width, canvas.height);
